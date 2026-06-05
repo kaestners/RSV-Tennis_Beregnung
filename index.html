@@ -108,7 +108,7 @@ input[type="range"] {
 
 <!-- Auswahl -->
 <div class="section">
-<h3>Platzauswahl</h3>
+<h3>1.Einen der drei Plaetze auswaehlen <br> 2.Bei Start oder Aussetzen eine Zeit auswaehlen <br> 3.Den zugehörigen Button druecken</h3>
 <div class="buttons">
 <button class="zone" onclick="selectZone(1,this)">Platz 1</button>
 <button class="zone" onclick="selectZone(2,this)">Platz 2</button>
@@ -131,6 +131,7 @@ input[type="range"] {
 <button onclick="setPreset(5)">5 min</button>
 <button onclick="setPreset(10)">10 min</button>
 <button onclick="setPreset(15)">15 min</button>
+<button onclick="setPreset(20)">20 min</button>
 </div>
 
 <button class="startBtn" onclick="startWater()">Start</button>
@@ -151,7 +152,7 @@ Minuten: <span id="mVal">0</span>
 
 <!-- STOP -->
 <div class="section">
-<h3>STOP</h3>
+<h3>STOP<br> (Stopt oben angewaehlte Plaetze)</h3>
 <button class="stopBtn" onclick="stopWater()">NOT AUS</button>
 </div>
 
