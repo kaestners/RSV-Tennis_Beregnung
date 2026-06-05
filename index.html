@@ -83,6 +83,7 @@ input[type="range"] {
 <div class="container">
 <h2>Bewässerung RSV Tennis 🎾</h2>
 
+<!-- Auswahl -->
 <div class="section">
 <h3>Platz auswählen</h3>
 <div class="buttons">
@@ -93,6 +94,7 @@ input[type="range"] {
 </div>
 </div>
 
+<!-- START -->
 <div class="section">
 <h3>Dauer</h3>
 
@@ -105,11 +107,26 @@ input[type="range"] {
 <button class="startBtn" onclick="startWater()">Start</button>
 </div>
 
+<!-- AUSSETZEN -->
+<div class="section">
+<h3>Aussetzen</h3>
+
+Stunden: <span id="hVal">2</span>
+<input type="range" id="hours" min="0" max="24" value="2">
+
+Minuten: <span id="mVal">0</span>
+<input type="range" id="minutes" min="0" max="59" value="0">
+
+<button class="stopBtn" onclick="suspendWater()">Aussetzen</button>
+</div>
+
+<!-- STOP -->
 <div class="section">
 <h3>STOP</h3>
 <button class="stopBtn" onclick="stopWater()">NOT AUS</button>
 </div>
 
+<!-- API LOG -->
 <div class="section">
 <h3>API Log</h3>
 <div id="apiLog">Noch kein Aufruf</div>
@@ -130,21 +147,33 @@ let selectedZone = null;
 
 const runSlider = document.getElementById("runSlider");
 const runVal = document.getElementById("runVal");
+
+const hours = document.getElementById("hours");
+const minutes = document.getElementById("minutes");
+const hVal = document.getElementById("hVal");
+const mVal = document.getElementById("mVal");
+
 const statusBox = document.getElementById("status");
 const apiLog = document.getElementById("apiLog");
 
+// Slider Anzeigen
 runSlider.oninput = () => runVal.innerText = runSlider.value;
+hours.oninput = () => hVal.innerText = hours.value;
+minutes.oninput = () => mVal.innerText = minutes.value;
 
+// Auswahl
 function selectZone(zone, el) {
     selectedZone = zone;
     document.querySelectorAll(".zone").forEach(b => b.classList.remove("active"));
     el.classList.add("active");
 }
 
+// Status
 function setStatus(text){
     statusBox.innerText = text;
 }
 
+// API Log
 function logApi(endpoint, payload, response){
     apiLog.innerHTML =
     "<b>Endpoint:</b><br>" + endpoint +
@@ -152,6 +181,7 @@ function logApi(endpoint, payload, response){
     "</pre><br><b>Antwort:</b><br><pre>" + response + "</pre>";
 }
 
+// API Call
 async function apiCall(endpoint, payload, msg){
     try {
         const res = await fetch(endpoint, {
@@ -161,6 +191,7 @@ async function apiCall(endpoint, payload, msg){
         });
 
         const text = await res.text();
+
         logApi(endpoint, payload, text);
 
         if (!res.ok) {
@@ -175,6 +206,7 @@ async function apiCall(endpoint, payload, msg){
     }
 }
 
+// START
 function startWater(){
     if(!selectedZone) return setStatus("Bitte Platz wählen");
 
@@ -185,6 +217,7 @@ function startWater(){
     }, "Start gesendet");
 }
 
+// STOP
 function stopWater(){
     if(!selectedZone) return setStatus("Bitte Platz wählen");
 
@@ -192,6 +225,19 @@ function stopWater(){
         zone: selectedZone,
         relays: RELAYS
     }, "Stop gesendet");
+}
+
+// AUSSETZEN
+function suspendWater(){
+    if(!selectedZone) return setStatus("Bitte Platz wählen");
+
+    let duration = (hours.value * 3600) + (minutes.value * 60);
+
+    apiCall("/api/suspend", {
+        zone: selectedZone,
+        relays: RELAYS,
+        duration: duration
+    }, "Aussetzen gesendet");
 }
 </script>
 
