@@ -66,7 +66,7 @@ input[type="range"] {
     width: 100%;
 }
 
-#apiLog, #status {
+#status {
     margin-top: 10px;
     padding: 10px;
     background: rgba(0,0,0,0.5);
@@ -126,12 +126,6 @@ Minuten: <span id="mVal">0</span>
 <button class="stopBtn" onclick="stopWater()">NOT AUS</button>
 </div>
 
-<!-- API LOG -->
-<div class="section">
-<h3>API Log</h3>
-<div id="apiLog">Noch kein Aufruf</div>
-</div>
-
 <div id="status">Bereit...</div>
 
 </div>
@@ -154,7 +148,6 @@ const hVal = document.getElementById("hVal");
 const mVal = document.getElementById("mVal");
 
 const statusBox = document.getElementById("status");
-const apiLog = document.getElementById("apiLog");
 
 // Slider Anzeigen
 runSlider.oninput = () => runVal.innerText = runSlider.value;
@@ -173,14 +166,6 @@ function setStatus(text){
     statusBox.innerText = text;
 }
 
-// API Log
-function logApi(endpoint, payload, response){
-    apiLog.innerHTML =
-    "<b>Endpoint:</b><br>" + endpoint +
-    "<br><br><b>Payload:</b><br><pre>" + JSON.stringify(payload, null, 2) +
-    "</pre><br><b>Antwort:</b><br><pre>" + response + "</pre>";
-}
-
 // API Call
 async function apiCall(endpoint, payload, msg){
     try {
@@ -190,12 +175,9 @@ async function apiCall(endpoint, payload, msg){
             body: JSON.stringify(payload)
         });
 
-        const text = await res.text();
-
-        logApi(endpoint, payload, text);
-
         if (!res.ok) {
-            setStatus("Fehler: " + text);
+            const t = await res.text();
+            setStatus("Fehler: " + t);
         } else {
             setStatus(msg);
         }
