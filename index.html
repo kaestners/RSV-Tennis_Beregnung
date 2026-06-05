@@ -83,7 +83,7 @@ input[type="range"] {
 <div class="container">
 <h2>Bewässerung RSV Tennis 🎾</h2>
 
-<!-- Auswahl -->
+<!-- AUSWAHL -->
 <div class="section">
 <h3>Platz auswählen</h3>
 <div class="buttons">
@@ -103,14 +103,14 @@ input[type="range"] {
 </div>
 
 <input type="range" id="runSlider" min="1" max="15" value="5">
-    
-<div class="buttons" style="margin-top:10px;">
-    <button onclick="setPreset(2)">2 min</button>
-    <button onclick="setPreset(5)">5 min</button>
-    <button onclick="setPreset(10)">10 min</button>
-    <button onclick="setPreset(15)">15 min</button>
-</div>
 
+<!-- Preset Buttons -->
+<div class="buttons" style="margin-top:10px;">
+<button onclick="setPreset(2)">2 min</button>
+<button onclick="setPreset(5)">5 min</button>
+<button onclick="setPreset(10)">10 min</button>
+<button onclick="setPreset(15)">15 min</button>
+</div>
 
 <button class="startBtn" onclick="startWater()">Start</button>
 </div>
@@ -147,6 +147,7 @@ const RELAYS = {
 
 let selectedZone = null;
 
+// Elemente
 const runSlider = document.getElementById("runSlider");
 const runVal = document.getElementById("runVal");
 
@@ -162,7 +163,13 @@ runSlider.oninput = () => runVal.innerText = runSlider.value;
 hours.oninput = () => hVal.innerText = hours.value;
 minutes.oninput = () => mVal.innerText = minutes.value;
 
-// Auswahl
+// Preset Buttons
+function setPreset(val){
+    runSlider.value = val;
+    runVal.innerText = val;
+}
+
+// Platz auswählen
 function selectZone(zone, el) {
     selectedZone = zone;
     document.querySelectorAll(".zone").forEach(b => b.classList.remove("active"));
