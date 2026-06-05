@@ -13,46 +13,32 @@ body {
     color: white;
 }
 
-/* Hintergrund (Wasserzeichen!) */
+/* Hintergrund */
 .bg {
     position: fixed;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
-
     background: url("image.png") center no-repeat;
     background-size: 70%;
-
-    opacity: 1.0;
+    opacity: 0.08;
     filter: blur(2px);
-
-    z-index: -2;
+    z-index: -1;
 }
 
 .container {
     padding: 15px;
     max-width: 500px;
     margin: auto;
-
-    background: rgba(64,64,64,0.5);
+    background: rgba(255,255,255,0.08);
     border-radius: 20px;
-
-    backdrop-filter: blur(2px);
-    border: 1px solid rgba(255,255,255,0.2);
+    backdrop-filter: blur(15px);
 }
-
-h1 { text-align: center; }
 
 .section {
     margin-top: 20px;
     padding: 15px;
     border-radius: 15px;
-
     background: rgba(255,255,255,0.05);
-    backdrop-filter: blur(10px);
-
-    border: 1px solid rgba(255,255,255,0.1);
 }
 
 .buttons {
@@ -61,66 +47,52 @@ h1 { text-align: center; }
     gap: 10px;
 }
 
+/* Buttons */
 button {
-    padding: 15px;
+    padding: 18px;
+    font-size: 18px;
     border-radius: 12px;
-    font-size: 16px;
+    border: none;
     cursor: pointer;
-
-    border: 1px solid rgba(255,255,255,0.2);
-    background: rgba(220,240,255,0.5);
-    color: black;
-
-    transition: all 0.2s ease;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    transition: 0.2s;
 }
 
 button:hover {
     transform: scale(1.05);
-    background: rgba(255,255,255,0.2);
 }
 
+/* Zones */
 .zone.active {
-    background: rgba(0,123,255,0.6);
+    background: #007bff;
+}
+
+/* Main Buttons */
+.startBtn,
+.stopBtn {
+    font-size: 20px;
+    padding: 20px;
+    width: 100%;
 }
 
 .startBtn {
-    background: rgba(40,167,69,0.6);
+    background: #28a745;
 }
 
 .stopBtn {
-    background: rgba(230,0,0,0.7);
-    font-weight: bold;
+    background: #e60000;
 }
 
-.statusBtn {
-    background: rgba(108,117,125,0.6);
-}
-
-input {
+/* Slider */
+input[type="range"] {
     width: 100%;
-    padding: 8px;
+}
+
+#apiLog, #status, #log {
     margin-top: 10px;
-
-    border-radius: 10px;
-    border: none;
-
-    background: rgba(255,255,255,0.1);
-    color: white;
-}
-
-#status, #liveStatus {
-    margin-top: 15px;
     padding: 10px;
-    border-radius: 10px;
-
     background: rgba(0,0,0,0.5);
-}
-
-#log {
-    max-height: 150px;
-    overflow-y: auto;
-    background: rgba(0,0,0,0.5);
-    padding: 10px;
     border-radius: 10px;
     font-size: 13px;
 }
@@ -132,205 +104,194 @@ input {
 <div class="bg"></div>
 
 <div class="container">
-    <h1>Bewaesserung</h1>
+<h2>Bewaesserung- RSV-Tennis&#127934</h2>
 
-    <div class="section">
-        <h3>Bereich</h3>
-        <div class="buttons">
-            <button class="zone" onclick="selectZone(1, this)">Ventil 1</button>
-            <button class="zone" onclick="selectZone(2, this)">Ventil 2</button>
-            <button class="zone" onclick="selectZone(3, this)">Ventil 3</button>
-            <button class="zone" onclick="selectZone('all', this)">Alle</button>
-        </div>
-    </div>
+<!-- Auswahl -->
+<div class="section">
+<h3>Bereich</h3>
+<div class="buttons">
+<button class="zone" onclick="selectZone(1,this)">Ventil 1</button>
+<button class="zone" onclick="selectZone(2,this)">Ventil 2</button>
+<button class="zone" onclick="selectZone(3,this)">Ventil 3</button>
+<button class="zone" onclick="selectZone('all',this)">Alle</button>
+</div>
+</div>
 
-    <div class="section">
-        <h3>Start (Minuten)</h3>
-        <input type="number" id="runTime" value="5">
-        <button class="startBtn" onclick="startWater()">Start</button>
-    </div>
+<!-- START mit Slider -->
+<div class="section">
+<h3>Start</h3>
 
-    <div class="section">
-        <h3>Aussetzen</h3>
+<div style="text-align:center;font-size:28px;font-weight:bold;">
+<span id="runVal">5</span> min
+</div>
 
-        <label>Stunden: <span id="hVal">2</span></label>
-        <input type="range" min="0" max="24" value="2" id="hours">
+<input type="range" id="runSlider" min="1" max="30" value="5">
 
-        <label>Minuten: <span id="mVal">0</span></label>
-        <input type="range" min="0" max="59" value="0" id="minutes">
+<div class="buttons" style="margin-top:10px;">
+<button onclick="setPreset(5)">5 min</button>
+<button onclick="setPreset(10)">10 min</button>
+<button onclick="setPreset(15)">15 min</button>
+</div>
 
-        <button class="stopBtn" onclick="suspendWater()">Aussetzen</button>
-    </div>
+<button class="startBtn" onclick="startWater()">Start</button>
+</div>
 
-    <div class="section">
-        <h3>STOP</h3>
-        <button class="stopBtn" onclick="stopWater()">NOT AUS</button>
-    </div>
+<!-- AUSSETZEN -->
+<div class="section">
+<h3>Aussetzen</h3>
 
-    <div class="section">
-        <h3>System Status</h3>
-        <button class="statusBtn" onclick="loadStatus()">Aktualisieren</button>
-        <div id="liveStatus">Wird geladen...</div>
-    </div>
+Stunden: <span id="hVal">2</span>
+<input type="range" id="hours" min="0" max="24" value="2">
 
-    <div class="section">
-        <h3>Verlauf</h3>
-        <div id="log"></div>
-    </div>
+Minuten: <span id="mVal">0</span>
+<input type="range" id="minutes" min="0" max="59" value="0">
 
-    <div id="status">Bereit...</div>
+<button class="stopBtn" onclick="suspendWater()">Aussetzen</button>
+</div>
+
+<!-- STOP -->
+<div class="section">
+<h3>STOP</h3>
+<button class="stopBtn" onclick="stopWater()">NOT AUS</button>
+</div>
+
+<!-- API Log -->
+<div class="section">
+<h3>API Log</h3>
+<div id="apiLog">Noch kein Aufruf</div>
+</div>
+
+<!-- Verlauf -->
+<div class="section">
+<h3>Verlauf</h3>
+<div id="log"></div>
+</div>
+
+<div id="status">Bereit...</div>
+
 </div>
 
 <script>
-const API_KEY = 7b31-8e11-c7b7-2901;
+const API_KEY = "7b31-8e11-c7b7-2901";
 
 const RELAYS = {
-    1: 12308243,
-    2: "RELAY_ID_2",
-    3: "12308246"
+1: "12308244",
+2: "12308245",
+3: "12308246"
 };
 
-let selectedZone = null;
-let pollTimer = null;
-
-function selectZone(zone, el) {
-    selectedZone = zone;
-    document.querySelectorAll(".zone").forEach(b => b.classList.remove("active"));
-    el.classList.add("active");
-}
-
+// DOM
 const hours = document.getElementById("hours");
 const minutes = document.getElementById("minutes");
+const hVal = document.getElementById("hVal");
+const mVal = document.getElementById("mVal");
+const runSlider = document.getElementById("runSlider");
+const runVal = document.getElementById("runVal");
 
-hours.oninput = () => document.getElementById("hVal").innerText = hours.value;
-minutes.oninput = () => document.getElementById("mVal").innerText = minutes.value;
+const statusBox = document.getElementById("status");
+const apiLog = document.getElementById("apiLog");
+const logBox = document.getElementById("log");
 
-function setStatus(msg, error=false) {
-    const el = document.getElementById("status");
-    el.innerText = msg;
-    el.style.background = error ? "#a94442" : "rgba(0,0,0,0.5)";
+let selectedZone = null;
+
+// Auswahl
+function selectZone(zone, el) {
+selectedZone = zone;
+document.querySelectorAll(".zone").forEach(b => b.classList.remove("active"));
+el.classList.add("active");
 }
 
-function addLog(text) {
-    let logs = JSON.parse(localStorage.getItem("log") || "[]");
-    let now = new Date().toLocaleString();
-    logs.unshift(`[${now}] ${text}`);
-    localStorage.setItem("log", JSON.stringify(logs));
-    renderLog();
+// Slider Anzeige
+hours.oninput = () => hVal.innerText = hours.value;
+minutes.oninput = () => mVal.innerText = minutes.value;
+runSlider.oninput = () => runVal.innerText = runSlider.value;
+
+// Presets
+function setPreset(val){
+runSlider.value = val;
+runVal.innerText = val;
 }
 
-function renderLog() {
-    let logs = JSON.parse(localStorage.getItem("log") || "[]");
-    document.getElementById("log").innerHTML = logs.slice(0,20).join("<br>");
+// Status
+function setStatus(text){
+statusBox.innerText = text;
 }
 
-function formatTime(sec) {
-    let m = Math.floor(sec / 60);
-    let s = sec % 60;
-    return `${m}m ${s}s`;
+// Verlauf
+function addLog(text){
+let logs = JSON.parse(localStorage.getItem("log") || "[]");
+logs.unshift(`[${new Date().toLocaleString()}] ${text}`);
+localStorage.setItem("log", JSON.stringify(logs));
+logBox.innerHTML = logs.join("<br>");
 }
 
-function startWater() {
-    if (!selectedZone) return setStatus("Bitte Bereich waehlen", true);
+// API Log
+function logApi(url, text){
+let safeUrl = url
+.replace(/api_key=[^&]*/g, "api_key=*****")
+.replace(/relay_id=[^&]*/g, "relay_id=***");
 
-    let sec = document.getElementById("runTime").value * 60;
-
-    let url = selectedZone === "all"
-        ? `https://api.hydrawise.com/api/v1/setzone.php?action=runall&api_key=${API_KEY}&perio_id=999&custom=${sec}`
-        : `https://api.hydrawise.com/api/v1/setzone.php?action=runall&api_key=${API_KEY}&perio_id=999&relay_id=${RELAYS[selectedZone]}&custom=${sec}`;
-
-    fetch(url)
-        .then(() => {
-            setStatus("Start OK");
-            addLog("Start: " + selectedZone + " fuer " + sec + "s");
-            loadStatus();
-        })
-        .catch(() => setStatus("Fehler beim Start", true));
+apiLog.innerHTML = `
+<b>Request:</b><br>${safeUrl}<br><br>
+<b>Antwort:</b><br><pre>${text}</pre>
+`;
 }
 
-function suspendWater() {
-    if (!selectedZone) return setStatus("Bitte Bereich waehlen", true);
-
-    let sec = (hours.value * 3600) + (minutes.value * 60);
-
-    let url = selectedZone === "all"
-        ? `https://api.hydrawise.com/api/v1/setzone.php?action=suspendall&api_key=${API_KEY}&perio_id=999&custom=${sec}`
-        : `https://api.hydrawise.com/api/v1/setzone.php?action=suspend&api_key=${API_KEY}&perio_id=999&custom=${sec}`;
-
-    fetch(url)
-        .then(() => {
-            setStatus("Ausgesetzt");
-            addLog("Suspend: " + selectedZone + " fuer " + sec + "s");
-            loadStatus();
-        })
-        .catch(() => setStatus("Fehler", true));
+// API Call
+function apiCall(url, msg){
+fetch(url)
+.then(r => r.text())
+.then(t => {
+logApi(url, t);
+setStatus(msg);
+})
+.catch(() => {
+logApi(url, "Befehl gesendet (Antwort vom Browser blockiert)");
+setStatus("Befehl gesendet");
+});
 }
 
-function stopWater() {
-    if (!selectedZone) return setStatus("Bitte Bereich waehlen", true);
+// START
+function startWater(){
+if(!selectedZone) return setStatus("Bitte Bereich waehlen");
 
-    let url = selectedZone === "all"
-        ? `https://api.hydrawise.com/api/v1/setzone.php?action=stopall&api_key=${API_KEY}&perio_id=999`
-        : `https://api.hydrawise.com/api/v1/setzone.php?action=stop&api_key=${API_KEY}&perio_id=999&relay_id=${RELAYS[selectedZone]}`;
+let sec = runSlider.value * 60;
 
-    fetch(url)
-        .then(() => {
-            setStatus("Gestoppt");
-            addLog("STOP: " + selectedZone);
-            loadStatus();
-        })
-        .catch(() => setStatus("Fehler beim Stop", true));
+let url = selectedZone === "all"
+? `https://api.hydrawise.com/api/v1/setzone.php?action=runall&api_key=${API_KEY}&perio_id=999&custom=${sec}`
+: `https://api.hydrawise.com/api/v1/setzone.php?action=run&api_key=${API_KEY}&perio_id=999&relay_id=${RELAYS[selectedZone]}&custom=${sec}`;
+
+apiCall(url, "Start gesendet");
+addLog("Start " + selectedZone + " - " + runSlider.value + " min");
 }
 
-function loadStatus() {
+// STOP
+function stopWater(){
+if(!selectedZone) return setStatus("Bitte Bereich waehlen");
 
-    if (pollTimer) clearTimeout(pollTimer);
+let url = selectedZone === "all"
+? `https://api.hydrawise.com/api/v1/setzone.php?action=stopall&api_key=${API_KEY}`
+: `https://api.hydrawise.com/api/v1/setzone.php?action=stop&api_key=${API_KEY}&relay_id=${RELAYS[selectedZone]}`;
 
-    let url = `https://api.hydrawise.com/api/v1/statusschedule.php?api_key=${API_KEY}`;
-
-    fetch(url)
-        .then(res => res.json())
-        .then(data => {
-
-            let html = "";
-
-            data.relays.forEach(r => {
-
-                let running = (r.time == 1);
-
-                html += `
-                    <div style="
-                        margin-bottom:10px;
-                        padding:10px;
-                        border-radius:15px;
-                        background: rgba(255,255,255,0.08);
-                        backdrop-filter: blur(10px);
-                        border: 1px solid rgba(255,255,255,0.15);
-                    ">
-                        <b>${r.name}</b><br>
-                        Status: <span style="color:${running ? '#28a745' : '#ccc'}">
-                        ${running ? 'LAEUFT' : 'STOP'}
-                        </span><br>
-                        ${running ? "Restzeit: " + formatTime(parseInt(r.run)) : ""}
-                        <br>
-                        Naechster Start: ${r.timestr}
-                    </div>
-                `;
-            });
-
-            document.getElementById("liveStatus").innerHTML = html;
-
-            let next = data.nextpoll || 30;
-            pollTimer = setTimeout(loadStatus, next * 1000);
-
-            setStatus("Status aktualisiert");
-
-        })
-        .catch(() => setStatus("Fehler beim Statusladen", true));
+apiCall(url, "Stop gesendet");
+addLog("STOP " + selectedZone);
 }
 
-renderLog();
-loadStatus();
+// AUSSETZEN
+function suspendWater(){
+if(!selectedZone) return setStatus("Bitte Bereich waehlen");
+
+let sec = hours.value * 3600 + minutes.value * 60;
+let now = Math.floor(Date.now()/1000);
+let until = now + sec;
+
+let url = selectedZone === "all"
+? `https://api.hydrawise.com/api/v1/setzone.php?action=suspendall&api_key=${API_KEY}&perio_id=999&custom=${until}`
+: `https://api.hydrawise.com/api/v1/setzone.php?action=suspend&api_key=${API_KEY}&perio_id=999&relay_id=${RELAYS[selectedZone]}&custom=${until}`;
+
+apiCall(url, "Aussetzen gesendet");
+addLog("Suspend " + selectedZone);
+}
 </script>
 
 </body>
