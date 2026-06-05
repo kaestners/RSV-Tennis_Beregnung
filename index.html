@@ -28,16 +28,15 @@ body {
     padding: 15px;
     max-width: 500px;
     margin: auto;
-    background: rgba(255,255,255,0.008);
+    background: rgba(255,255,255,0.05);
     border-radius: 20px;
-    backdrop-filter: blur(6px);
 }
 
 .section {
     margin-top: 20px;
     padding: 15px;
     border-radius: 15px;
-    background: rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.08);
 }
 
 .buttons {
@@ -47,9 +46,9 @@ body {
 }
 
 button {
-    padding: 18px;
-    font-size: 18px;
-    border-radius: 12px;
+    padding: 15px;
+    font-size: 16px;
+    border-radius: 10px;
     border: none;
     cursor: pointer;
     background: rgba(255,255,255,0.1);
@@ -63,9 +62,11 @@ button {
 .startBtn { background: #28a745; }
 .stopBtn  { background: #e60000; }
 
-input[type="range"] { width: 100%; }
+input[type="range"] {
+    width: 100%;
+}
 
-#apiLog, #status, #log {
+#apiLog, #status {
     margin-top: 10px;
     padding: 10px;
     background: rgba(0,0,0,0.5);
@@ -94,8 +95,9 @@ input[type="range"] { width: 100%; }
 
 <div class="section">
 <h3>Dauer</h3>
-<div style="text-align:center;font-size:28px;font-weight:bold;">
-<span id="runVal">5</span> min
+
+<div style="text-align:center;font-size:24px;">
+<span id="runVal">5</span> Minuten
 </div>
 
 <input type="range" id="runSlider" min="1" max="15" value="5">
@@ -114,6 +116,7 @@ input[type="range"] { width: 100%; }
 </div>
 
 <div id="status">Bereit...</div>
+
 </div>
 
 <script>
@@ -123,21 +126,20 @@ const RELAYS = {
     3: "12308246"
 };
 
+let selectedZone = null;
+
 const runSlider = document.getElementById("runSlider");
 const runVal = document.getElementById("runVal");
-
 const statusBox = document.getElementById("status");
 const apiLog = document.getElementById("apiLog");
 
-let selectedZone = null;
+runSlider.oninput = () => runVal.innerText = runSlider.value;
 
 function selectZone(zone, el) {
     selectedZone = zone;
     document.querySelectorAll(".zone").forEach(b => b.classList.remove("active"));
     el.classList.add("active");
 }
-
-runSlider.oninput = () => runVal.innerText = runSlider.value;
 
 function setStatus(text){
     statusBox.innerText = text;
@@ -159,8 +161,39 @@ async function apiCall(endpoint, payload, msg){
         });
 
         const text = await res.text();
-
         logApi(endpoint, payload, text);
-        setStatus(msg);
 
-    } catch {
+        if (!res.ok) {
+            setStatus("Fehler: " + text);
+        } else {
+            setStatus(msg);
+        }
+
+    } catch (err) {
+        setStatus("Netzwerkfehler");
+        console.error(err);
+    }
+}
+
+function startWater(){
+    if(!selectedZone) return setStatus("Bitte Platz wählen");
+
+    apiCall("/api/start", {
+        zone: selectedZone,
+        relays: RELAYS,
+        duration: runSlider.value * 60
+    }, "Start gesendet");
+}
+
+function stopWater(){
+    if(!selectedZone) return setStatus("Bitte Platz wählen");
+
+    apiCall("/api/stop", {
+        zone: selectedZone,
+        relays: RELAYS
+    }, "Stop gesendet");
+}
+</script>
+
+</body>
+</html>
